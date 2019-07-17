@@ -19,11 +19,13 @@ class DefaultsMixin(object):
     ]
 
 
-class SprintViewSet(DefaultsMixin, ModelViewSet):
+class SprintViewSet(DefaultsMixin, ModelViewSet, PageNumberPagination):
     """
     API endpoint for listing and creating sprints
     """
     queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
-
+    page_size = 25
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
