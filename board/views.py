@@ -24,26 +24,29 @@ class DefaultsMixin(object):
     ]
 
 
-class SprintViewSet(DefaultsMixin, PageNumberPagination, ModelViewSet):
+class DefaultsPagination(PageNumberPagination):
+    """
+    Default settings for view pagination
+    """
+    page_size = 25
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class SprintViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
     """
     API endpoint for listing and creating sprints
     """
     queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
-    page_size = 25
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 
 
-class TaskViewSet(DefaultsMixin, PageNumberPagination, ModelViewSet):
+class TaskViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
     """
     API endpoint for listing and creating tasks
     """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    page_size = 25
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 
 
 
