@@ -18,6 +18,7 @@ class Sprint(models.Model):
         return self.name or _('Sprint ending %s') % self.end
 
 
+@python_2_unicode_compatible
 class Task(models.Model):
     """ Unit of work to be done within the sprint """
 
