@@ -33,7 +33,7 @@ class DefaultsPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class SprintViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
+class SprintViewSet(DefaultsMixin, ModelViewSet):
     """
     API endpoint for listing and creating sprints
     """
@@ -41,7 +41,7 @@ class SprintViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
     serializer_class = SprintSerializer
 
 
-class TaskViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
+class TaskViewSet(DefaultsMixin, ModelViewSet):
     """
     API endpoint for listing and creating tasks
     """
@@ -49,7 +49,7 @@ class TaskViewSet(DefaultsMixin, DefaultsPagination, ModelViewSet):
     serializer_class = TaskSerializer
 
 
-class UserViewSet(DefaultsMixin, DefaultsPagination, ReadOnlyModelViewSet):
+class UserViewSet(DefaultsMixin, ReadOnlyModelViewSet):
     """
     API endpoint for listing users
     """
