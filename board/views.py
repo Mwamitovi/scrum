@@ -1,5 +1,7 @@
 # board/views.py
+from collections import OrderedDict
 from django.contrib.auth import get_user_model
+from rest_framework.response import Response
 from rest_framework import permissions, authentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -32,6 +34,15 @@ class DefaultsPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('limit', self.page_size),
+            ('results', data)
+        ]))
+
 
 class SprintViewSet(DefaultsMixin, ModelViewSet):
     """
@@ -39,6 +50,7 @@ class SprintViewSet(DefaultsMixin, ModelViewSet):
     """
     queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
+    pagination_class = DefaultsPagination
 
 
 class TaskViewSet(DefaultsMixin, ModelViewSet):
@@ -47,6 +59,7 @@ class TaskViewSet(DefaultsMixin, ModelViewSet):
     """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    pagination_class = DefaultsPagination
 
 
 class UserViewSet(DefaultsMixin, ReadOnlyModelViewSet):
@@ -57,3 +70,4 @@ class UserViewSet(DefaultsMixin, ReadOnlyModelViewSet):
     lookup_url_kwarg = User.USERNAME_FIELD
     queryset = User.objects.order_by(User.USERNAME_FIELD)
     serializer_class = UserSerializer
+    pagination_class = DefaultsPagination
