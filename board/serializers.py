@@ -4,12 +4,10 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from board.models import Sprint, Task
 
-
 User = get_user_model()
 
 
 class SprintSerializer(serializers.ModelSerializer):
-
     links = serializers.SerializerMethodField()
 
     class Meta:
@@ -22,12 +20,13 @@ class SprintSerializer(serializers.ModelSerializer):
             'self': reverse(
                 'sprint-detail', kwargs={'pk': obj.pk}, request=request
             ),
+            'tasks': reverse(
+                'task-list', request=request) + '?sprint={}'.format(obj.pk),
         }
 
 
 # noinspection PyMethodMayBeStatic
 class TaskSerializer(serializers.ModelSerializer):
-
     status_display = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     assigned = serializers.SlugRelatedField(
@@ -65,7 +64,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     full_name = serializers.CharField(source='get_full_name', read_only=True)
     links = serializers.SerializerMethodField()
 
@@ -75,8 +73,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_links(self, obj):
         request = self.context['request']
+        username = obj.get_username()
         return {
             'self': reverse(
                 'user-detail', kwargs={User.USERNAME_FIELD: obj.username}, request=request
-            )
+            ),
+            'tasks': '{}?assigned={}'.format(
+                reverse('task-list', request=request), username
+            ),
         }
