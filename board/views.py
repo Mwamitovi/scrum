@@ -8,8 +8,9 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
 from board.serializers import SprintSerializer, TaskSerializer, UserSerializer
-from board.models import Sprint, Task
-from board.forms import TaskFilter
+from board.forms import TaskFilter, SprintFilter
+from board.models import Task, Sprint
+
 
 
 User = get_user_model()
@@ -58,6 +59,7 @@ class SprintViewSet(DefaultsMixin, ModelViewSet):
     queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
     pagination_class = DefaultsPagination
+    filter_class = SprintFilter
     search_fields = ('name', )
     ordering_fields = ('end', 'name', )
 
