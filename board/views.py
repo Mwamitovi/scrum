@@ -9,6 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from board.serializers import SprintSerializer, TaskSerializer, UserSerializer
 from board.models import Sprint, Task
+from board.forms import TaskFilter
 
 
 User = get_user_model()
@@ -68,6 +69,7 @@ class TaskViewSet(DefaultsMixin, ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     pagination_class = DefaultsPagination
+    filter_class = TaskFilter
     search_fields = ('name', 'description', )
     ordering_fields = ('name', 'order', 'started', 'due', 'completed', )
 
