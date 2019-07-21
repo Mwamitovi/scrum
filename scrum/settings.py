@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # 3PPs (third party apps)
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     # iApps (internal apps)
     'board',
 ]
