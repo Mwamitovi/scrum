@@ -107,7 +107,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         sprint = attrs.get('sprint')
-        status = int(attrs.get('status'))
+        status = attrs.get('status', Task.STATUS_TODO)
         started = attrs.get('started')
         completed = attrs.get('completed')
 
