@@ -105,6 +105,26 @@ class TaskSerializer(serializers.ModelSerializer):
         # we either assign or add tasks to sprint
         return value
 
+    def validate(self, attrs):
+        sprint = attrs.get('sprint')
+        status = int(attrs.get('status'))
+        started = attrs.get('started')
+        completed = attrs.get('completed')
+
+        if not sprint and status != Task.STATUS_TODO:
+            msg = _('Backlog tasks must have "Not Started" status.')
+            raise serializers.ValidationError(msg)
+
+        if started and status == Task.STATUS_TODO:
+            msg = _('Started date cannot be set for not started tasks.')
+            raise serializers.ValidationError(msg)
+
+        if completed and status != Task.STATUS_DONE:
+            msg = _('Completed date cannot be set for uncompleted tasks.')
+            raise serializers.ValidationError(msg)
+
+        return attrs
+
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='get_full_name', read_only=True)
