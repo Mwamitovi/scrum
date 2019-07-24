@@ -28,7 +28,7 @@ class SprintSerializer(serializers.ModelSerializer):
 
     def validate_end(self, value):
         """
-        checks that the end date is greater than or equal to the
+        Checks that the end date is greater than or equal to the
         current date for newly created sprints or any sprint that is being updated.
         """
         new = self.instance is None
@@ -77,6 +77,33 @@ class TaskSerializer(serializers.ModelSerializer):
                 'user-detail', kwargs={User.USERNAME_FIELD: obj.assigned}, request=request
             )
         return links
+
+    def validate_sprint(self, value):
+        """
+        Checks that the sprint is not changed after the task completed and
+        that tasks are not assigned to sprints that have already been completed.
+        """
+
+        # If we have a task with unique pk,
+        if self.instance and self.instance.pk:
+            # Check if sprint field has changed
+            if value != self.instance.sprint:
+                # But this task was completed
+                if self.instance.status == Task.STATUS_DONE:
+                    msg = _('Cannot change the sprint of a completed task.')
+                    raise serializers.ValidationError(msg)
+                # But sprint is not current, in the past
+                if value and value.end < date.today():
+                    msg = _('Cannot assign tasks to past sprints.')
+                    raise serializers.ValidationError(msg)
+        else:
+            # Add a new task, but check end date of sprint
+            if value and value.end < date.today():
+                msg = _('Cannot add tasks to past sprints.')
+                raise serializers.ValidationError(msg)
+        # If all is well,
+        # we either assign or add tasks to sprint
+        return value
 
 
 class UserSerializer(serializers.ModelSerializer):
