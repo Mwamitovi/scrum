@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Scrum Board</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <!-- list order is important for our script dependencies -->
+    <script src="{% static 'board/vendor/jquery-3.3.1.js' %}"></script>
+    <script src="{% static 'board/vendor/underscore.js-1.9.1' %}"></script>
+    <script src="{% static 'board/vendor/backbone.js-1.4.0' %}"></script>
+    <script id="config" type="text/json">
+      {
+        "models": {},
+        "collections": {},
+        "views": {},
+        "router": null
+      }
+    </script>
+    <!-- Include app.js after the config block, 
+         but before the project files -->
+    <script src="{% static 'board/js/app.js' %}"></script>
+    <!-- Place the script code below dependencies -->
+    <script src="{% static 'board/js/models.js' %}"></script>
+    <script src="{% static 'board/js/views.js' %}"></script>
+    <script src="{% static 'board/js/router.js' %}"></script>
+  </body>
+</html>
