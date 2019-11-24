@@ -8,6 +8,8 @@
     initialize: function (options) {
       this.contentElement = '#content';
       this.current = null;
+      this.header = new app.views.HeaderView();
+      $('body').prepend(this.header.el);
       Backbone.history.start();
     },
     home: function () {
@@ -20,8 +22,8 @@
       callback = callback || this[name];
       callback = _.wrap(callback, function (original) {
         let args = _.without(arguments, original);
-        
-        if (app.session.authenticate()) {
+
+        if (app.session.authenticated()) {
           original.apply(this, args);
         } else {
           // show the login screen before calling the view
@@ -30,6 +32,7 @@
           login = new app.views.LoginView();
           $(this.contentElement).after(login.el);
           login.on('done', function () {
+            this.header.render();
             $(this.contentElement).show();
             original.apply(this, args);
           }, this);
