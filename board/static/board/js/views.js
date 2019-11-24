@@ -65,6 +65,22 @@
     }
   });
 
+  let HeaderView = TemplateView.extend({
+    tagName: 'header',
+    templateName: '#header-template',
+    events: {
+      'click a.logout': 'logout'
+    },
+    getContext: function () {
+      return { authenticated: app.session.authenticated() };
+    },
+    logout: function (e) {
+      e.preventDefault();
+      app.session.delete();
+      window.location = '/';
+    }
+  });
+
   let HomepageView = TemplateView.extend({
     templateName: '#home-template'
   });
@@ -86,6 +102,7 @@
     }
   });
 
+  app.views.HeaderView = HeaderView;
   app.views.HomepageView = HomepageView;
   app.views.LoginView = LoginView;
 
