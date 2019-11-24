@@ -7,12 +7,16 @@
     <title>Scrum Board</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/html" id="home-template">
+      <h1>Welcome to this Scrum Board project</h1>
+    </script>
   </head>
   <body>
+    <div id="content"></div>
     <!-- list order is important for our script dependencies -->
     <script src="{% static 'board/vendor/jquery-3.3.1.js' %}"></script>
-    <script src="{% static 'board/vendor/underscore.js-1.9.1' %}"></script>
-    <script src="{% static 'board/vendor/backbone.js-1.4.0' %}"></script>
+    <script src="{% static 'board/vendor/underscore-1.9.1.js' %}"></script>
+    <script src="{% static 'board/vendor/backbone-1.4.0.js' %}"></script>
     <script id="config" type="text/json">
       {
         "models": {},
