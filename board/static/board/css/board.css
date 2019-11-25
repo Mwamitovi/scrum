@@ -74,7 +74,7 @@ header .title {
 
 header nav {
   display: inline-block;
-  /* float: right; */
+  float: right;
   padding-right: 25px;
 }
 
