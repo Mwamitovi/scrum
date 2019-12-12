@@ -106,6 +106,33 @@
       this._count = response.count
 
       return response.results || []
+    },
+    getOrFetch: function (id) {
+      // returns: deferred "object" which resolves to the model instance
+      const result = new $.Deferred()
+      // we look for a model matching the given ID,
+      // in the current in-memory list of models in the collection
+      let model = this.get(id)
+
+      if (!model) {
+        model = this.push({ id: id })
+        // if the model wasn't in the collection,
+        // it is fetched from the API
+        model.fetch({
+          success: function (model, response, options) {
+            result.resolve(model)
+          },
+          error: function (model, response, options) {
+            result.reject(model, response)
+          }
+        })
+      } else {
+        // if the model is found in the collection,
+        // the deferred object is immediately resolved with the result
+        result.resolve(model)
+      }
+
+      return result
     }
   })
 
