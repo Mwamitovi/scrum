@@ -174,15 +174,20 @@
       this.sprint = null
 
       app.collections.ready.done(function () {
-        // push() puts a new model instance into client-site collection
-        // this model will know only the `id` of the model
-        self.sprint = app.sprints.push({ id: self.sprintId })
-        // fetch() retrieves the remaining details from the API
-        self.sprint.fetch({
-          success: function () {
+        // we replace fetch() with getOrFetch(),
+        // since it returns a deferred object,
+        app.sprint.getOrFetch(self.sprintId)
+          // we chain a done() callback for when a sprint is available
+          .done(function (sprint) {
+            self.sprint = sprint
             self.render()
-          }
-        })
+          })
+          // if fetching the model raises an error, fail() callback is fired
+          .fail(function (sprint) {
+            self.sprint = sprint
+            self.sprint.invalid = true
+            self.render()
+          })
       })
     },
     getContext: function () {
