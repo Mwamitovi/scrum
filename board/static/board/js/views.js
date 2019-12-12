@@ -88,6 +88,7 @@
       window.location = '/'
     }
   })
+
   // Should be defined just before the HomepageView
   const NewSprintView = FormView.extend({
     templateName: '#new-sprint-template',
@@ -163,6 +164,32 @@
     }
   })
 
+  const SprintView = TemplateView.extend({
+    templateName: '#sprint-template',
+    initialize: function (options) {
+      const self = this
+
+      TemplateView.prototype.initialize.apply(this, arguments)
+      this.sprintId = options.sprintId
+      this.sprint = null
+
+      app.collections.ready.done(function () {
+        // push() puts a new model instance into client-site collection
+        // this model will know only the `id` of the model
+        self.sprint = app.sprints.push({ id: self.sprintId })
+        // fetch() retrieves the remaining details from the API
+        self.sprint.fetch({
+          success: function () {
+            self.render()
+          }
+        })
+      })
+    },
+    getContext: function () {
+      return { sprint: this.sprint }
+    }
+  })
+
   const LoginView = FormView.extend({
     id: 'login',
     templateName: '#login-template',
@@ -183,6 +210,7 @@
 
   app.views.HeaderView = HeaderView
   app.views.HomepageView = HomepageView
+  app.views.SprintView = SprintView
   app.views.LoginView = LoginView
 // eslint-disable-next-line
 })(jQuery, Backbone, _, app)
