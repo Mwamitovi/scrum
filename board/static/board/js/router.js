@@ -3,7 +3,10 @@
 (function ($, Backbone, _, app) {
   const AppRouter = Backbone.Router.extend({
     routes: {
-      '': 'home'
+      '': 'home',
+      // captures the value after the slash,
+      // passes it as `id` to the sprint callback function,
+      'sprint/:id': 'sprint'
     },
     initialize: function (options) {
       this.contentElement = '#content'
@@ -15,6 +18,15 @@
     },
     home: function () {
       const view = new app.views.HomepageView({ el: this.contentElement })
+      this.render(view)
+    },
+    sprint: function (id) {
+      // takes the id, and constructs a new SprintView and renders it
+      const view = new app.views.SprintView({
+        el: this.contentElement,
+        sprintId: id
+      })
+
       this.render(view)
     },
     route: function (route, name, callback) {
