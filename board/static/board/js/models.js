@@ -80,6 +80,63 @@
     }
   })
 
+  const BaseModel = Backbone.Model.extend({
+    url: function () {
+      // override the default URL construction
+      // And look for the `self` value from links attribute
+      const links = this.get('links')
+      let url = links && links.self
+
+      if (!url) {
+        // If URL isn't given by the API,
+        // we use original Backbone method to construct it
+        url = Backbone.Model.prototype.url.call(this)
+      }
+
+      return url
+    }
+  })
+
+  const BaseCollection = Backbone.Collection.extend({
+    parse: function (response) {
+      // store the next, previous and count metadata on the collection
+      // returns the object list, which comes from the API results key
+      this._next = response.next
+      this._previous = response.previous
+      this._count = response.count
+
+      return response.results || []
+    }
+  })
+
+  app.models.Sprint = BaseModel.extend({})
+  app.models.Task = BaseModel.extend({})
+  app.models.User = BaseModel.extend({
+    idAttributemodel: 'username'
+  })
+
+  app.collections.ready = $.getJSON(app.apiRoot)
+
+  app.collections.ready.done(function (data) {
+    app.collections.Sprints = BaseCollection.extend({
+      model: app.models.Sprint,
+      url: data.sprints
+    })
+    app.sprints = new app.collections.Sprints()
+
+    app.collections.Tasks = BaseCollection.extend({
+      model: app.models.Task,
+      url: data.tasks
+    })
+    app.tasks = new app.collections.Tasks()
+
+    app.collections.Users = BaseCollection.extend({
+      model: app.models.User,
+      url: data.Users
+    })
+    app.users = new app.collections.Users()
+  })
+
   app.session = new Session()
 // eslint-disable-next-line
 })(jQuery, Backbone, _, app)
