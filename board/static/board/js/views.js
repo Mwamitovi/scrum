@@ -56,6 +56,14 @@
       const errors = xhr.responseJSON
       this.showErrors(errors)
     },
+    modelFailure: function (model, xhr, options) {
+      // While $.ajax() failure callback has the response object
+      // as the first param,
+      // the Model.save has the model instance as the first param
+      // and response as the second
+      const errors = xhr.responseJSON
+      this.showErrors(errors)
+    },
     done: function (e) {
       if (e) {
         e.preventDefault()
@@ -80,9 +88,44 @@
       window.location = '/'
     }
   })
+  // Should be defined just before the HomepageView
+  const NewSprintView = FormView.extend({
+    templateName: '#new-sprint-template',
+    className: 'new-sprint',
+    events: _.extend({
+      // Event handler to cancel, calls done()
+      'click button.cancel': 'done'
+    }, FormView.prototype.events),
+    submit: function (e) {
+      const self = this
+      let attributes = {}
+      // form values are serialized,
+      // utilize app.sprints.create() instead of $.post(),
+      // success and error handlers are binded to this view
+      FormView.prototype.submit.apply(this, arguments)
+      attributes = this.serializeForm(this.form)
+      app.collections.ready.done(function () {
+        app.sprints.create(attributes, {
+          wait: true,
+          success: $.proxy(self.success, self),
+          error: $.proxy(self.modelFailure, self)
+        })
+      })
+    },
+    success: function (model) {
+      // Once a sprint is created,
+      // the view calls done(),
+      this.done()
+      // and redirects to sprint-detail route
+      window.location.hash = '#sprint/' + model.get('id')
+    }
+  })
 
   const HomepageView = TemplateView.extend({
     templateName: '#home-template',
+    events: {
+      'click button.add': 'renderAddForm'
+    },
     initialize: function (options) {
       // Once view is created,
       // sprints with end-dates greater than seven days ago are fetched
@@ -103,6 +146,20 @@
       // template context now contains the current sprints from app.sprints
       // if app.collections isn't ready, this is a "null" value
       return { sprints: app.sprints || null }
+    },
+    renderAddForm: function (e) {
+      // handles click event for the add-button,
+      // creates a NewSprintView instance just above the button
+      const view = new NewSprintView()
+      const link = $(e.currentTarget)
+
+      e.preventDefault()
+      link.before(view.el)
+      link.hide()
+      view.render()
+      view.on('done', function () {
+        link.show()
+      })
     }
   })
 
@@ -111,6 +168,7 @@
     templateName: '#login-template',
     submit: function (e) {
       let data = {}
+
       FormView.prototype.submit.apply(this, arguments)
       data = this.serializeForm(this.form)
       $.post(app.apiLogin, data)
