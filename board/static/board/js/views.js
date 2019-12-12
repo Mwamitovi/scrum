@@ -82,7 +82,28 @@
   })
 
   const HomepageView = TemplateView.extend({
-    templateName: '#home-template'
+    templateName: '#home-template',
+    initialize: function (options) {
+      // Once view is created,
+      // sprints with end-dates greater than seven days ago are fetched
+      // and the view is re-rendered to display once available
+      const self = this
+      TemplateView.prototype.initialize.apply(this, arguments)
+      app.collections.ready.done(function () {
+        let end = new Date()
+        end.setDate(end.getDate() - 7)
+        end = end.toISOString().replace(/T.*/g, '')
+        app.sprints.fetch({
+          data: { end_min: end },
+          success: $.proxy(self.render, self)
+        })
+      })
+    },
+    getContext: function () {
+      // template context now contains the current sprints from app.sprints
+      // if app.collections isn't ready, this is a "null" value
+      return { sprints: app.sprints || null }
+    }
   })
 
   const LoginView = FormView.extend({
